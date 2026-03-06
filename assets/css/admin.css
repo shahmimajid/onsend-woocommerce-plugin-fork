@@ -1,0 +1,226 @@
+/* Settings Page */
+#adminmenu .toplevel_page_onsend .wp-menu-image img {
+    padding-top: 7px;
+}
+.onsend-settings .csf-header-left .onsend-logo {
+    vertical-align: middle;
+    margin: 0 10px 5px 0;
+}
+.csf-theme-onsend .csf-header-inner {
+    background-color: #000447;
+}
+.csf-theme-onsend .csf-header-inner h1 {
+    color: #fff
+}
+.csf-theme-onsend .csf-header-inner h1 small {
+    color: #555
+}
+.csf-theme-onsend .csf-expand-all {
+    background-color: #0d114a;
+    color: #999;
+}
+.csf-theme-onsend .csf-expand-all:hover {
+    background-color: #333;
+    color: #fff;
+}
+.csf-theme-onsend .csf-search input {
+    color: #fff;
+    background-color: #0d114a;
+}
+.csf-theme-onsend .csf-search:focus {
+    background-color: #444;
+}
+.csf-theme-onsend .csf-search::-webkit-input-placeholder {
+    color: #666;
+}
+.csf-theme-onsend .csf-nav ul li a {
+    font-weight: 500;
+    background-color: #55b600;
+    border-color: #4da500;
+    color: #1d3f00;
+}
+.csf-theme-onsend .csf-nav ul li a:hover {
+    color: #000447;
+}
+.csf-theme-onsend .csf-nav ul li .csf-active {
+    background-color: #65d800;
+    color: #000447;
+}
+.csf-theme-onsend .csf-nav ul ul li a {
+    background-color: #55b600;
+    border-color: #4da500;
+    color: #1d3f00;
+}
+.csf-theme-onsend .csf-nav ul ul li .csf-active {
+    background-color: #65d800;
+}
+.csf-theme-onsend .csf-nav ul ul:before {
+    background-color: rgba(34,34,34,.75);
+}
+.csf-theme-onsend .csf-nav > ul > li:last-child > a {
+    border: none;
+}
+.csf-theme-onsend .csf-nav-normal ul li a {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+.csf-theme-onsend .csf-nav-normal ul li .csf-active:after {
+    content: "";
+    height: 0;
+    width: 0;
+    border: solid transparent;
+    border-width: 4px;
+    border-right-color: #fff;
+    margin-top: -4px;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    pointer-events: none;
+}
+.csf-theme-onsend .csf-nav-inline {
+    background-color: #0d114a;
+}
+.csf-theme-onsend .csf-nav-inline ul li a {
+    text-align: center;
+    border-right-width: 1px;
+    border-right-style: solid;
+}
+.csf-theme-onsend .csf-nav-inline ul li .csf-active:after {
+    content: "";
+    width: 0;
+    height: 0;
+    border: solid transparent;
+    border-width: 4px;
+    border-bottom-color: #fff;
+    margin-left: -4px;
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    pointer-events: none;
+}
+.csf-theme-onsend .csf-nav-background {
+    background-color: #0d114a;
+}
+.csf-theme-onsend .csf-footer {
+    background-color: #000447;
+    color: #9ca2ff;
+}
+
+/* Order Columns */
+.onsend_wc_notification_status {
+    text-align: center;
+}
+.onsend_wc_notification_status p {
+    color: #6e6e6e;
+}
+.onsend_wc_notification_status img {
+    width: 24px;
+    height: 24px;
+}
+.onsend-wc-notification-status {
+    width: 100%;
+    line-height: 2.5em;
+    border-bottom: 1px solid transparent;
+    border-radius: 4px;
+    display: block;
+}
+.onsend-wc-notification-status.status-pending {
+    background-color: #f3f6f9;
+    border-color: #baccdd;
+    color: #181c32;
+}
+.onsend-wc-notification-status.status-success {
+    background-color: #1bc5bd;
+    border-color: #0d5c59;
+    color: #fff;
+}
+.onsend-wc-notification-status.status-failed {
+    background-color: #f64e60;
+    border-color: #c30a1e;
+    color: #fff;
+}
+
+/* Order Actions */
+.wc-action-button-onsend_wc_send_notifications {
+    background-color: #65d800 !important;
+    color: #fff !important;
+    border-color: #5dc700 !important;
+}
+.wc-action-button-onsend_wc_send_notifications:hover {
+    background-color: #5dc700 !important;
+}
+.wc-action-button-onsend_wc_send_notifications::after {
+    content: "\f19a";
+    font-family: Dashicons;
+}
+
+/* Metaboxes */
+.postbox[id^=onsend],
+.postbox[id^=onsend] .postbox-header {
+    border-color: #000447;
+}
+.postbox[id^=onsend] .postbox-header {
+    background-color: #000447;
+}
+.postbox[id^=onsend] .postbox-header h2 {
+    color: #65d800;
+}
+.postbox[id^=onsend] .handle-order-higher,
+.postbox[id^=onsend] .handle-order-lower {
+    color: #f5f5f5;
+}
+.postbox[id^=onsend] .handle-order-higher[aria-disabled=true],
+.postbox[id^=onsend] .handle-order-lower[aria-disabled=true] {
+    color: #b5b5b5;
+}
+.postbox[id^=onsend] .toggle-indicator {
+    color: #f5f5f5;
+}
+
+/* Metabox - Notifications Status */
+.onsend-wc-notifications-status-list {
+    max-height: 900px;
+    margin-bottom: 0;
+    overflow: auto;
+}
+.onsend-wc-notifications-status-list .notification-status {
+    text-align: right;
+    margin-bottom: 15px;
+}
+.onsend-wc-notifications-status-list .notification-status:last-child {
+    margin-bottom: 0;
+}
+.onsend-wc-notifications-status-list .notification-status .notification-status-message {
+    background-color: #fff;
+    border: 1px solid transparent;
+    text-align: left;
+    border-radius: 3px;
+    padding: 10px 15px;
+    display: block;
+}
+.onsend-wc-notifications-status-list .notification-status.status-success .notification-status-message {
+    background-color: #d1f3f2;
+    border-color: #bfefed;
+    color: #0e6662;
+}
+.onsend-wc-notifications-status-list .notification-status.status-failed .notification-status-message {
+    background-color: #fddcdf;
+    border-color: #fccdd2;
+    color: #802932;
+}
+.onsend-wc-notifications-status-list .notification-status .notification-status-timestamp {
+    font-size: 11px;
+    color: #757575;
+    display: inline-block;
+}
+#onsend-wc-notifications-status .onsend-wc-notifications-status-alert {
+    font-weight: 500;
+    padding: 6px 0;
+    display: block;
+}
+#onsend-wc-notifications-status .onsend-wc-notification-send-btn {
+    width: 100%;
+    font-weight: 500;
+    text-align: center;
+    margin-top: 6px;
+}
