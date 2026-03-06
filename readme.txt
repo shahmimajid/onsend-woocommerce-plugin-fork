@@ -3,8 +3,8 @@ Contributors:      onsend, ShahmiMajid
 Tags:              onsend, onpay, messaging, woocommerce, notification, message
 Requires at least: 4.6
 Tested up to:      6.9.1
-Stable tag:        1.2.0
-Requires PHP:      8.0
+Stable tag:        1.2.1
+Requires PHP:      7.0
 License:           GPLv3 or later
 License URI:       http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -28,8 +28,13 @@ OnSend is a messaging API provider that enables you to send notifications to you
 
 == Changelog ==
 
+= 1.2.1 - 2026-03-06 =
+- **Fixed:** Cleanup stale duplicate `onsend_wc_send_notification` cron events before scheduling new ones.
+- **Improved:** Reduces spamming risk from leftover queued jobs in WordPress cron storage.
+
 = 1.2.0 - 2026-03-06 =
-- **Fixed:** Atomic post-meta lock to prevent duplicate WooCommerce WhatsApp notifications
+- **Fixed:** Added dual-layer deduplication to prevent duplicate WhatsApp sends on order processing transition.
+- **Improved:** Added per-recipient send lock and duplicate cron event guard for WooCommerce status hooks.
 
 = 1.1.0 - 2026-03-06 =
 - **Community Fork Release** by ShahmiMajid.

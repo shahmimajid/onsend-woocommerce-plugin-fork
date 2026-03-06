@@ -39,10 +39,23 @@ class OnSend_WC_Notifications {
             return false;
         }
 
+        $phone = onsend_format_phone( $phone );
+
+        $dedupe_key = $this->get_notification_hash( $notification, $order_id, $phone, $order->get_status() );
+        $send_lock_key = '_onsend_send_lock_' . $dedupe_key;
+        $send_lock_acquired = add_post_meta( $order_id, $send_lock_key, time(), true );
+
+        // The same scheduled event can be created more than once by concurrent order hooks.
+        // Only one process is allowed to send this notification to this recipient.
+        if ( !$send_lock_acquired ) {
+            return false;
+        }
+
+        $is_sent = false;
+
         try {
             $api = new OnSend_WC_API();
 
-            $phone = onsend_format_phone( $phone );
             $content = onsend_wc_do_shortcode( onsend_whatsapp_format_message( $notification['message'] ), $order );
 
             $args = array(
@@ -76,6 +89,8 @@ class OnSend_WC_Notifications {
                     'title'     => $notification['title'],
                     'phone'     => $phone,
                 ) );
+
+                $is_sent = $response_status;
             }
 
             return $response;
@@ -87,6 +102,10 @@ class OnSend_WC_Notifications {
                 'title'     => $notification['title'],
                 'phone'     => $phone,
             ) );
+        }
+
+        if ( !$is_sent ) {
+            delete_post_meta( $order_id, $send_lock_key );
         }
 
         return false;
@@ -131,7 +150,15 @@ class OnSend_WC_Notifications {
                     $recipients = $this->get_notification_recipients( $notification['recipients'], $order );
 
                     foreach ( $recipients as $recipient ) {
-                        wp_schedule_single_event( time(), 'onsend_wc_send_notification', array( $notification, $order_id, $recipient ) );
+                        $event_args = array( $notification, $order_id, $recipient );
+
+                        // Cleanup any stale/duplicate events left in the cron array for this exact payload.
+                        // This helps when older plugin versions already queued repeated jobs.
+                        while ( $timestamp = wp_next_scheduled( 'onsend_wc_send_notification', $event_args ) ) {
+                            wp_unschedule_event( $timestamp, 'onsend_wc_send_notification', $event_args );
+                        }
+
+                        wp_schedule_single_event( time(), 'onsend_wc_send_notification', $event_args );
                     }
                 }
             }
@@ -174,6 +201,18 @@ class OnSend_WC_Notifications {
         $recipients = array_unique( $recipients );
 
         return $recipients;
+
+    }
+
+    private function get_notification_hash( $notification, $order_id, $phone = '', $order_status = '' ) {
+
+        return md5( wp_json_encode( array(
+            'title'        => $notification['title'],
+            'order_status' => !empty( $order_status ) ? 'wc-' . $order_status : $notification['order_status'],
+            'recipients'   => $notification['recipients'],
+            'order_id'     => $order_id,
+            'phone'        => $phone,
+        ) ) );
 
     }
 
