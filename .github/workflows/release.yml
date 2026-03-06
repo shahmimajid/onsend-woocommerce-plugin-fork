@@ -1,39 +1,43 @@
-name: Build and Release Plugin ZIP
+name: Build Plugin ZIP and Attach to Release
 
 on:
+  push:
+    tags:
+      - 'v'
   workflow_dispatch:
     inputs:
       tag:
         description: "Tag to release (e.g. v1.1.0)"
         required: true
         type: string
-  push:
-    tags:
-      - 'v*'
 
 jobs:
   release:
-    name: Build Plugin ZIP and Attach to Release
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set version from tag
-        id: version
+      - name: Determine tag
+        id: tag
+        shell: bash
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "VERSION=${{ inputs.tag }}" >> $GITHUB_OUTPUT
-          else  
-            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+            echo "TAG=${{ inputs.tag }}" >> $GITHUB_OUTPUT
+          else
+            echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
           fi
+          echo "Using tag: ${{ steps.tag.outputs.TAG }}"
+
+      - name: Checkout code (tag)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.tag.outputs.TAG }}
+          fetch-depth: 0
 
       - name: Build plugin ZIP
+        shell: bash
         run: |
           mkdir -p build/onsend
 
-          # Copy all plugin files EXCEPT repo-only files
           rsync -av \
             --exclude='.git' \
             --exclude='.github' \
@@ -44,20 +48,21 @@ jobs:
             --exclude='build' \
             ./ build/onsend/
 
-          # Create the ZIP with top-level folder named 'onsend'
           cd build
-          zip -r ../onsend-${{ steps.version.outputs.VERSION }}.zip onsend/
+          zip -r ../onsend-${{ steps.tag.outputs.TAG }}.zip onsend/
 
       - name: Generate SHA256 checksum
+        shell: bash
         run: |
-          sha256sum onsend-${{ steps.version.outputs.VERSION }}.zip > SHA256SUMS
+          sha256sum onsend-${{ steps.tag.outputs.TAG }}.zip > SHA256SUMS
           cat SHA256SUMS
 
       - name: Create GitHub Release and upload assets
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.tag.outputs.TAG }}
           files: |
-            onsend-${{ steps.version.outputs.VERSION }}.zip
+            onsend-${{ steps.tag.outputs.TAG }}.zip
             SHA256SUMS
           generate_release_notes: true
         env:
