@@ -3,8 +3,8 @@ Contributors:      onsend, ShahmiMajid
 Tags:              onsend, onpay, messaging, woocommerce, notification, message
 Requires at least: 4.6
 Tested up to:      6.9.1
-Stable tag:        1.1.0
-Requires PHP:      7.0
+Stable tag:        1.2.0
+Requires PHP:      8.0
 License:           GPLv3 or later
 License URI:       http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -27,6 +27,9 @@ OnSend is a messaging API provider that enables you to send notifications to you
 5. Activate the plugin and navigate to the "Settings" page to configure your API details.
 
 == Changelog ==
+
+= 1.2.0 - 2026-03-06 =
+- **Fixed:** Atomic post-meta lock to prevent duplicate WooCommerce WhatsApp notifications
 
 = 1.1.0 - 2026-03-06 =
 - **Community Fork Release** by ShahmiMajid.
