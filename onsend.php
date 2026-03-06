@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       OnSend (Community Fork)
  * Description:       Send messaging notifications to your customers through OnSend.
- * Version:           1.1.1
+ * Version:           1.2.1
  * Requires at least: 6.9
  * Requires PHP:      8.0
  * Author:            OnPay Solutions
@@ -21,7 +21,7 @@ define( 'ONSEND_FILE', __FILE__ );
 define( 'ONSEND_URL', plugin_dir_url( ONSEND_FILE ) );
 define( 'ONSEND_PATH', plugin_dir_path( ONSEND_FILE ) );
 define( 'ONSEND_BASENAME', plugin_basename( ONSEND_FILE ) );
-define( 'ONSEND_VERSION', '1.0.0' );
+define( 'ONSEND_VERSION', '1.2.1' );
 
 // Plugin core class
 require( ONSEND_PATH . 'includes/class-onsend.php' );

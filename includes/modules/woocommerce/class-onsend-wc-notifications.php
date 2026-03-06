@@ -39,10 +39,23 @@ class OnSend_WC_Notifications {
             return false;
         }
 
+        $phone = onsend_format_phone( $phone );
+
+        $dedupe_key = $this->get_notification_hash( $notification, $order_id, $phone, $order->get_status() );
+        $send_lock_key = '_onsend_send_lock_' . $dedupe_key;
+        $send_lock_acquired = add_post_meta( $order_id, $send_lock_key, time(), true );
+
+        // The same scheduled event can be created more than once by concurrent order hooks.
+        // Only one process is allowed to send this notification to this recipient.
+        if ( !$send_lock_acquired ) {
+            return false;
+        }
+
+        $is_sent = false;
+
         try {
             $api = new OnSend_WC_API();
 
-            $phone = onsend_format_phone( $phone );
             $content = onsend_wc_do_shortcode( onsend_whatsapp_format_message( $notification['message'] ), $order );
 
             $args = array(
@@ -76,6 +89,8 @@ class OnSend_WC_Notifications {
                     'title'     => $notification['title'],
                     'phone'     => $phone,
                 ) );
+
+                $is_sent = $response_status;
             }
 
             return $response;
@@ -87,6 +102,10 @@ class OnSend_WC_Notifications {
                 'title'     => $notification['title'],
                 'phone'     => $phone,
             ) );
+        }
+
+        if ( !$is_sent ) {
+            delete_post_meta( $order_id, $send_lock_key );
         }
 
         return false;
@@ -116,20 +135,31 @@ class OnSend_WC_Notifications {
             onsend_wc_parse_notification_settings( $notification );
 
             if ( $notification['order_status'] === 'wc-' . $order->get_status() ) {
-                // Community Fork Fix: Idempotency Guard to prevent duplicate messages
-                // Create a unique key based on notification title, target status, and order ID
-                $notification_id = md5( $notification['title'] . $notification['order_status'] . $order_id );
-                $already_sent = get_post_meta( $order_id, '_onsend_sent_' . $notification_id, true );
+                // Use an atomic post-meta insert as an idempotency lock to prevent duplicate schedules
+                // when multiple hooks/processes run at nearly the same time.
+                $notification_id = md5( wp_json_encode( array(
+                    'title'        => $notification['title'],
+                    'order_status' => $notification['order_status'],
+                    'recipients'   => $notification['recipients'],
+                    'order_id'     => $order_id,
+                ) ) );
+                $meta_key = '_onsend_sent_' . $notification_id;
+                $lock_acquired = add_post_meta( $order_id, $meta_key, time(), true );
 
-                if ( ! $already_sent ) {
+                if ( $lock_acquired ) {
                     $recipients = $this->get_notification_recipients( $notification['recipients'], $order );
 
                     foreach ( $recipients as $recipient ) {
-                        wp_schedule_single_event( time(), 'onsend_wc_send_notification', array( $notification, $order_id, $recipient ) );
-                    }
+                        $event_args = array( $notification, $order_id, $recipient );
 
-                    // Mark as scheduled/sent to prevent duplicates in the same status cycle
-                    update_post_meta( $order_id, '_onsend_sent_' . $notification_id, time() );
+                        // Cleanup any stale/duplicate events left in the cron array for this exact payload.
+                        // This helps when older plugin versions already queued repeated jobs.
+                        while ( $timestamp = wp_next_scheduled( 'onsend_wc_send_notification', $event_args ) ) {
+                            wp_unschedule_event( $timestamp, 'onsend_wc_send_notification', $event_args );
+                        }
+
+                        wp_schedule_single_event( time(), 'onsend_wc_send_notification', $event_args );
+                    }
                 }
             }
         }
@@ -171,6 +201,18 @@ class OnSend_WC_Notifications {
         $recipients = array_unique( $recipients );
 
         return $recipients;
+
+    }
+
+    private function get_notification_hash( $notification, $order_id, $phone = '', $order_status = '' ) {
+
+        return md5( wp_json_encode( array(
+            'title'        => $notification['title'],
+            'order_status' => !empty( $order_status ) ? 'wc-' . $order_status : $notification['order_status'],
+            'recipients'   => $notification['recipients'],
+            'order_id'     => $order_id,
+            'phone'        => $phone,
+        ) ) );
 
     }
 
