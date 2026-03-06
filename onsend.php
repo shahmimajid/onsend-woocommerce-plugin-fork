@@ -1,12 +1,13 @@
 <?php
 /**
- * Plugin Name:       OnSend
- * Description:       Send WhatsApp notifications to your customers through OnSend.
- * Version:           1.0.0
- * Requires at least: 4.6
- * Requires PHP:      7.0
+ * Plugin Name:       OnSend (Community Fork)
+ * Description:       Send messaging notifications to your customers through OnSend.
+ * Version:           1.1.1
+ * Requires at least: 6.9
+ * Requires PHP:      8.0
  * Author:            OnPay Solutions
  * Author URI:        https://onsend.io/
+ * Maintainer:        Your GitHub Username
  * License:           GNU General Public License v3.0
  * License URI:       http://www.gnu.org/licenses/gpl-3.0.html
  * Text Domain:       onsend
