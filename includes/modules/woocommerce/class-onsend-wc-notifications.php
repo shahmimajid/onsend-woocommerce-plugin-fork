@@ -116,10 +116,20 @@ class OnSend_WC_Notifications {
             onsend_wc_parse_notification_settings( $notification );
 
             if ( $notification['order_status'] === 'wc-' . $order->get_status() ) {
-                $recipients = $this->get_notification_recipients( $notification['recipients'], $order );
+                // Community Fork Fix: Idempotency Guard to prevent duplicate messages
+                // Create a unique key based on notification title, target status, and order ID
+                $notification_id = md5( $notification['title'] . $notification['order_status'] . $order_id );
+                $already_sent = get_post_meta( $order_id, '_onsend_sent_' . $notification_id, true );
 
-                foreach ( $recipients as $recipient ) {
-                    wp_schedule_single_event( time(), 'onsend_wc_send_notification', array( $notification, $order_id, $recipient ) );
+                if ( ! $already_sent ) {
+                    $recipients = $this->get_notification_recipients( $notification['recipients'], $order );
+
+                    foreach ( $recipients as $recipient ) {
+                        wp_schedule_single_event( time(), 'onsend_wc_send_notification', array( $notification, $order_id, $recipient ) );
+                    }
+
+                    // Mark as scheduled/sent to prevent duplicates in the same status cycle
+                    update_post_meta( $order_id, '_onsend_sent_' . $notification_id, time() );
                 }
             }
         }

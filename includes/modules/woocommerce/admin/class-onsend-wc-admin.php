@@ -92,7 +92,7 @@ class OnSend_WC_Admin {
 
         $actions['onsend_wc_send_notifications'] = array(
             'url'    => wp_nonce_url( admin_url( 'admin-ajax.php?action=onsend_wc_send_notifications&order_id=' . $order->get_id() ), 'onsend_wc_send_notifications' ),
-            'name'   => __( 'Send WhatsApp Notifications', 'onsend' ),
+            'name'   => __( 'Send Messaging Notifications', 'onsend' ),
             'action' => 'onsend_wc_send_notifications',
         );
 
@@ -125,7 +125,7 @@ class OnSend_WC_Admin {
     // Register bulk actions
     public function register_bulk_actions( $actions ) {
 
-        $actions['onsend_wc_send_notifications'] = __( 'Send WhatsApp notifications', 'onsend' );
+        $actions['onsend_wc_send_notifications'] = __( 'Send messaging notifications', 'onsend' );
         return $actions;
 
     }
