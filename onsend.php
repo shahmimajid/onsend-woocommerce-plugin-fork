@@ -7,7 +7,7 @@
  * Requires PHP:      8.0
  * Author:            OnPay Solutions
  * Author URI:        https://onsend.io/
- * Maintainer:        Your GitHub Username
+ * Maintainer:        ShahmiMajid
  * License:           GNU General Public License v3.0
  * License URI:       http://www.gnu.org/licenses/gpl-3.0.html
  * Text Domain:       onsend
