@@ -100,7 +100,7 @@ class OnSend_WC_Admin {
 
     }
 
-    // Handle actions - send WhatsApp notification
+    // Handle actions - send Messenging notification
     public function send_notifications() {
 
         $nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( $_GET['_wpnonce'] ) : null;
