@@ -116,20 +116,23 @@ class OnSend_WC_Notifications {
             onsend_wc_parse_notification_settings( $notification );
 
             if ( $notification['order_status'] === 'wc-' . $order->get_status() ) {
-                // Community Fork Fix: Idempotency Guard to prevent duplicate messages
-                // Create a unique key based on notification title, target status, and order ID
-                $notification_id = md5( $notification['title'] . $notification['order_status'] . $order_id );
-                $already_sent = get_post_meta( $order_id, '_onsend_sent_' . $notification_id, true );
+                // Use an atomic post-meta insert as an idempotency lock to prevent duplicate schedules
+                // when multiple hooks/processes run at nearly the same time.
+                $notification_id = md5( wp_json_encode( array(
+                    'title'        => $notification['title'],
+                    'order_status' => $notification['order_status'],
+                    'recipients'   => $notification['recipients'],
+                    'order_id'     => $order_id,
+                ) ) );
+                $meta_key = '_onsend_sent_' . $notification_id;
+                $lock_acquired = add_post_meta( $order_id, $meta_key, time(), true );
 
-                if ( ! $already_sent ) {
+                if ( $lock_acquired ) {
                     $recipients = $this->get_notification_recipients( $notification['recipients'], $order );
 
                     foreach ( $recipients as $recipient ) {
                         wp_schedule_single_event( time(), 'onsend_wc_send_notification', array( $notification, $order_id, $recipient ) );
                     }
-
-                    // Mark as scheduled/sent to prevent duplicates in the same status cycle
-                    update_post_meta( $order_id, '_onsend_sent_' . $notification_id, time() );
                 }
             }
         }
